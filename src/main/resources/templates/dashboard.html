@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ticket Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        #createTicketForm {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .ticket {
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .ticket:hover {
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .view-button {
+            background-color: #2196F3;
+            margin-top: 10px;
+        }
+        .view-button:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+<h1>Ticket Dashboard</h1>
+
+<hr/>
+
+<div>
+    <h2>All Tickets</h2>
+    <div th:each="ticket : ${tickets}" class="ticket">
+        <p><strong>Id:</strong> <span th:text="${ticket.id}"></span></p>
+        <p><strong>Subject:</strong> <span th:text="${ticket.subject}"></span></p>
+        <p><strong>Description:</strong> <span th:text="${ticket.description}"></span></p>
+        <p><strong>Created At:</strong> <span th:text="${ticket.createdAt}"></span></p>
+        <a th:href="@{/ticket/{id}(id=${ticket.id})}">
+            <button class="view-button">View Conversation</button>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
