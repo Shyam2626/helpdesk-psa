@@ -21,7 +21,7 @@ public class TicketMessage {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
     private String message;
-    private String userId;
+    private String email;
     private LocalDateTime timestamp;
     private boolean fromAssignee;
 }

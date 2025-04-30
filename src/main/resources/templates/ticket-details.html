@@ -54,7 +54,7 @@
                             <p><strong>Description:</strong> <span th:text="${ticket.description != null ? ticket.description : ticket.subject}"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Requester ID:</strong> <span th:text="${ticket.userId}"></span></p>
+                            <p><strong>Requester :</strong> <span th:text="${ticket.email}"></span></p>
                         </div>
                     </div>
                 </div>
@@ -65,19 +65,19 @@
                 <div th:each="message : ${messages}"
                      th:class="${message.fromAssignee ? 'message assignee-message' : 'message requester-message'}">
                     <div class="message-sender">
-                        <span th:text="${message.fromAssignee ? 'Support Agent (' + message.userId + ')' : 'Requester (' + message.userId + ')'}"></span>
+                        <span th:text="${message.fromAssignee ? 'Support Agent (' + message.email + ')' : 'Requester (' + message.email + ')'}"></span>
                     </div>
                     <div class="message-content" th:text="${message.message}"></div>
                     <div class="message-time" th:text="${#temporals.format(message.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></div>
                 </div>
             </div>
 
-            <form th:action="@{'/ticket/' + ${ticket.id} + '/replyToUser'}" method="post" class="mb-4">
+            <form th:action="@{'/ticket/' + ${ticket.id} + '/replyToUser'}" th:method="post" class="mb-4">
                 <div class="form-group">
                     <label for="message">Reply:</label>
                     <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
                 </div>
-                <input type="hidden" name="userId" th:value="${ticket.userId}" />
+                <input type="hidden" name="email" th:value="${ticket.email}" />
                 <button type="submit" class="btn btn-primary mt-2">Send Reply</button>
             </form>
 

@@ -57,6 +57,10 @@
         <p><strong>Id:</strong> <span th:text="${ticket.id}"></span></p>
         <p><strong>Subject:</strong> <span th:text="${ticket.subject}"></span></p>
         <p><strong>Description:</strong> <span th:text="${ticket.description}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${ticket.status}"></span></p>
+        <p><strong>Priority:</strong> <span th:text="${ticket.priority}"></span></p>
+        <p><strong>Category:</strong> <span th:text="${ticket.category}"></span></p>
+        <p><strong>Technician:</strong> <span th:text="${ticket.technician}"></span></p>
         <p><strong>Created At:</strong> <span th:text="${ticket.createdAt}"></span></p>
         <a th:href="@{/ticket/{id}(id=${ticket.id})}">
             <button class="view-button">View Conversation</button>

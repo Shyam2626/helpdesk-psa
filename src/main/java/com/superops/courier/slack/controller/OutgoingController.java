@@ -2,13 +2,17 @@ package com.superops.courier.slack.controller;
 
 import com.superops.courier.slack.entity.Ticket;
 import com.superops.courier.slack.entity.TicketMessage;
+import com.superops.courier.slack.entity.User;
 import com.superops.courier.slack.model.ReplyRequest;
+import com.superops.courier.slack.model.UserChannelSelection;
 import com.superops.courier.slack.repository.TicketMessageRepository;
 import com.superops.courier.slack.repository.TicketRepository;
+import com.superops.courier.slack.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +30,19 @@ public class OutgoingController {
     private TicketRepository ticketRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TicketMessageRepository ticketMessageRepository;
 
-    @PostMapping("/ticket/{id}/replyToUser")
-    public String replyToTicket(
-            @PathVariable String id,
-            @RequestParam("message") String message,
-            @RequestParam("userId") String userId
-    ) {
+    @PostMapping("/ticket/{ticketId}/replyToUser")
+    public String replyToUser(@PathVariable String ticketId,
+                              @ModelAttribute ReplyRequest request) {
         // Prepare JSON body
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("ticketId", id);
-        requestBody.put("message", message);
-        requestBody.put("userId", userId);
+        requestBody.put("ticketId", ticketId);
+        requestBody.put("message", request.getMessage());
+        requestBody.put("email", request.getEmail());
 
         // Send HTTP POST to external API
         RestTemplate restTemplate = new RestTemplate();
@@ -46,22 +50,22 @@ public class OutgoingController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        Ticket ticket = ticketRepository.findTicketById(id);
+        Ticket ticket = ticketRepository.findTicketById(ticketId);
         TicketMessage newMessage = new TicketMessage();
         newMessage.setTicket(ticket);
-        newMessage.setMessage(message);
+        newMessage.setMessage(request.getMessage());
         newMessage.setTimestamp(LocalDateTime.now());
-        newMessage.setUserId(userId);
+        newMessage.setEmail(request.getEmail());
         newMessage.setFromAssignee(true);
         ticketMessageRepository.save(newMessage);
 
         try {
-            restTemplate.postForEntity("https://6579-14-195-129-62.ngrok-free.app/api/sendReply", requestEntity, String.class);
+            restTemplate.postForEntity("https://2d3f-14-195-129-62.ngrok-free.app/api/sendReply", requestEntity, String.class);
         } catch (Exception e) {
             // You can log or handle the error as needed
             System.err.println("Failed to send reply: " + e.getMessage());
         }
-        return "redirect:/ticket/" + id;
+        return "redirect:/ticket/" + ticketId;
     }
 
     @GetMapping("/dashboard")
@@ -87,9 +91,47 @@ public class OutgoingController {
         newMessage.setTicket(ticket);
         newMessage.setMessage(request.getMessage());
         newMessage.setTimestamp(LocalDateTime.now());
-        newMessage.setUserId(request.getUserId());
-        newMessage.setFromAssignee(false);
+        newMessage.setEmail(request.getEmail());
+        User user = userRepository.findUserByEmail(request.getEmail());
+        newMessage.setFromAssignee(user.getTechnician());
         ticketMessageRepository.save(newMessage);
         return "redirect:/ticket/" + id;
+    }
+
+    @GetMapping("/connect")
+    public String installPage() {
+        return "connect";
+    }
+
+    @GetMapping("/select-channels")
+    public String showChannelForm(Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8081/channels";
+
+        List<Map<String, String>> channels = restTemplate.getForObject(url, List.class);
+
+        model.addAttribute("channels", channels);
+        model.addAttribute("userSelection", new UserChannelSelection()); // DTO for form binding
+
+        return "channel-selection";
+    }
+
+    @PostMapping("/submit-channels")
+    public String submitChannels(@ModelAttribute UserChannelSelection selection, Model model) {
+
+        String mapChannelUrl = "http://localhost:8081/mapChannel";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserChannelSelection> entity = new HttpEntity<>(selection, headers);
+
+        try {
+            restTemplate.postForEntity(mapChannelUrl, entity, String.class);
+        } catch (Exception e) {
+            // Log or handle error as needed
+            e.printStackTrace();
+        }
+
+        return "redirect:/dashboard";
     }
 }

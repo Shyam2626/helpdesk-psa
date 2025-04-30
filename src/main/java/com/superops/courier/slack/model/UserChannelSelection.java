@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReplyRequest {
-    private String message;
-    private String email;
+public class UserChannelSelection {
+    private String privateChannelId;
+    private String publicChannelId;
 }

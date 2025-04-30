@@ -20,10 +20,12 @@ public class Ticket {
     @Id
     private String id;
     private String client;
-    private String userId;
+    private String email;
     private String subject;
     private String description;
-    private String status;
+    private Status status;
+    private Priority priority;
+    private String category;
     private String technician;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

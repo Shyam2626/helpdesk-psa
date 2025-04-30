@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Channels</title>
+</head>
+<body>
+<h2>Select Technician and Requester Channels</h2>
+
+<form th:object="${userSelection}" method="post" action="/submit-channels">
+    <label th:for="*{privateChannelId}">Technician Channel:</label>
+    <select th:field="*{privateChannelId}">
+        <option value="">-- Select Technician Channel --</option>
+        <option th:each="channel : ${channels}"
+                th:value="${channel.channelId}"
+                th:text="${channel.name}"></option>
+    </select>
+
+    <br><br>
+
+    <label th:for="*{publicChannelId}">Requester Channel:</label>
+    <select th:field="*{publicChannelId}">
+        <option value="">-- Select Requester Channel --</option>
+        <option th:each="channel : ${channels}"
+                th:value="${channel.channelId}"
+                th:text="${channel.name}"></option>
+    </select>
+
+    <br><br>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

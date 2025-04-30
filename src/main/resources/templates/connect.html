@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect to Microsoft Teams</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .connect-button {
+            background-color: #6264A7;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<a href="http://localhost:8081/sync" class="connect-button">Connect to Microsoft Teams</a>
+<!--<a href="https://slack.com/oauth/v2/authorize?client_id=8612811486881.8612819258641&scope=app_mentions:read,channels:history,channels:read,chat:write,groups:history,groups:write,im:history,im:write,mpim:write,commands&user_scope=channels:history,chat:write,users:read.email,users:read&redirect_uri=https://fe5b-14-195-129-62.ngrok-free.app/sync-slack">-->
+<!--    Connect to Slack-->
+<!--</a>-->
+</body>
+</html>
+
