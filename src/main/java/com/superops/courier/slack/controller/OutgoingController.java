@@ -60,7 +60,7 @@ public class OutgoingController {
         ticketMessageRepository.save(newMessage);
 
         try {
-            restTemplate.postForEntity("https://2d3f-14-195-129-62.ngrok-free.app/api/sendReply", requestEntity, String.class);
+            restTemplate.postForEntity("http://localhost:3978/api/sendReply", requestEntity, String.class);
         } catch (Exception e) {
             // You can log or handle the error as needed
             System.err.println("Failed to send reply: " + e.getMessage());

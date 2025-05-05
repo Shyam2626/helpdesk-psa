@@ -6,13 +6,13 @@ import com.superops.courier.slack.model.ReplyRequest;
 import com.superops.courier.slack.model.TicketRequest;
 import com.superops.courier.slack.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class IncomingController {
@@ -63,6 +63,11 @@ public class IncomingController {
         return ticketRepository.findAll();
     }
 
+    @GetMapping("/tickets")
+    public List<Ticket> getTicketsByEmail(@RequestParam String email) {
+        return ticketRepository.findByEmail(email);
+    }
+
     @GetMapping("/tickets/{id}")
     public Ticket getTicket(@PathVariable String id){
         return ticketRepository.findTicketById(id);
@@ -72,5 +77,39 @@ public class IncomingController {
     public List<User> getAllTechnicians(@RequestParam Provider source){
         return userRepository.findByTechnicianTrueAndSource(source);
     }
+
+    @GetMapping("/ticket/{id}/fields")
+    public ResponseEntity<List<Map<String, Object>>> getEditableFields(@PathVariable String id) {
+        Optional<Ticket> optionalTicket = ticketRepository.findById(id);
+        if (!optionalTicket.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Ticket ticket = optionalTicket.get();
+        List<Map<String, Object>> fields = new ArrayList<>();
+
+        fields.add(Map.of(
+                "name", "priority",
+                "type", "dropdown",
+                "options", List.of("LOW", "MEDIUM", "HIGH"),
+                "value", ticket.getPriority() != null ? ticket.getPriority().toString().toLowerCase() : "LOW"
+        ));
+
+        fields.add(Map.of(
+                "name", "status",
+                "type", "dropdown",
+                "options", List.of("TODO", "IN_PROGRESS", "DONE" , "CANCELED"),
+                "value", ticket.getStatus() != null ? ticket.getStatus().toString().toLowerCase() : "TODO"
+        ));
+
+        fields.add(Map.of(
+                "name", "category",
+                "type", "text",
+                "value", ticket.getCategory() != null ? ticket.getCategory() : "null"
+        ));
+
+        return ResponseEntity.ok(fields);
+    }
+
 }
 
