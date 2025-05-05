@@ -17,11 +17,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class OutgoingController {
@@ -131,7 +133,33 @@ public class OutgoingController {
             // Log or handle error as needed
             e.printStackTrace();
         }
-
         return "redirect:/dashboard";
+    }
+
+    @PostMapping("/ticket/{id}/notes")
+    public String addNote(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+        String note = (String) payload.get("note");
+        Optional<Ticket> ticketOpt = ticketRepository.findById(id);
+        if (ticketOpt.isPresent()) {
+            Ticket ticket = ticketOpt.get();
+            ticket.getNotes().add(note);
+            ticketRepository.save(ticket);
+        } else {
+            return "redirect:/error";
+        }
+        return "redirect:/ticket/" + id;
+    }
+
+    @PostMapping("/ticket/{id}/note")
+    public String addNote(@PathVariable String id, @RequestParam String note) {
+        Optional<Ticket> ticketOpt = ticketRepository.findById(id);
+        if (ticketOpt.isPresent()) {
+            Ticket ticket = ticketOpt.get();
+            ticket.getNotes().add(note);
+            ticketRepository.save(ticket);
+        } else {
+            return "redirect:/error";
+        }
+        return "redirect:/ticket/" + id;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class IncomingController {
@@ -52,6 +53,7 @@ public class IncomingController {
         ticket.setUpdatedAt(LocalDateTime.now());
         ticket.setStatus(request.getStatus() != null ? request.getStatus() : ticket.getStatus());
         ticket.setCategory(request.getCategory() != null ? request.getCategory() : ticket.getCategory());
+        ticket.setSubCategory(request.getSubCategory() != null ? request.getSubCategory(): ticket.getSubCategory());
         ticket.setPriority(request.getPriority() != null ? request.getPriority() : ticket.getPriority());
         ticket.setTechnician(request.getTechnician() != null ? request.getTechnician() : ticket.getTechnician());
         ticketRepository.save(ticket);
@@ -92,23 +94,48 @@ public class IncomingController {
                 "name", "priority",
                 "type", "dropdown",
                 "options", List.of("LOW", "MEDIUM", "HIGH"),
-                "value", ticket.getPriority() != null ? ticket.getPriority().toString().toLowerCase() : "LOW"
+                "value", ticket.getPriority() != null ? ticket.getPriority().toString().toLowerCase() : "low"
         ));
 
         fields.add(Map.of(
                 "name", "status",
                 "type", "dropdown",
-                "options", List.of("TODO", "IN_PROGRESS", "DONE" , "CANCELED"),
-                "value", ticket.getStatus() != null ? ticket.getStatus().toString().toLowerCase() : "TODO"
+                "options", List.of("TODO", "IN_PROGRESS", "DONE", "CANCELED"),
+                "value", ticket.getStatus() != null ? ticket.getStatus().toString().toLowerCase() : "todo"
         ));
 
         fields.add(Map.of(
                 "name", "category",
-                "type", "text",
-                "value", ticket.getCategory() != null ? ticket.getCategory() : "null"
+                "type", "category-dropdown",
+                "options", List.of("engineering" , "sales" , "technician" , "hr"),
+                "value", ticket.getCategory() != null ? ticket.getCategory() : "hardware"
+        ));
+
+        fields.add(Map.of(
+                "name", "subcategory",
+                "type", "subcategory-dropdown",
+                "value", ticket.getSubCategory() != null ? ticket.getSubCategory() : ""
         ));
 
         return ResponseEntity.ok(fields);
+    }
+
+    @GetMapping("/ticket/subcategories")
+    public ResponseEntity<List<Map<String, String>>> getSubcategories(@RequestParam String category) {
+        Map<String, List<String>> categoryMap = Map.of(
+                "engineering", List.of("frontend", "backend", "devops", "qa"),
+                "sales", List.of("domestic", "international", "enterprise", "smb"),
+                "technician", List.of("electrical", "mechanical", "field service", "maintenance"),
+                "hr", List.of("recruitment", "payroll", "employee relations", "training")
+        );
+
+        List<String> subcategories = categoryMap.getOrDefault(category.toLowerCase(), List.of());
+
+        List<Map<String, String>> response = subcategories.stream()
+                .map(sub -> Map.of("title", sub, "value", sub.toLowerCase()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
 }

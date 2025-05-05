@@ -57,6 +57,30 @@
                             <p><strong>Requester :</strong> <span th:text="${ticket.email}"></span></p>
                         </div>
                     </div>
+
+                    <!-- Notes Section -->
+                    <div class="col-md-12 mt-3">
+                        <h5>Notes</h5>
+
+                        <!-- Display existing notes -->
+                        <div th:if="${ticket.notes != null and !ticket.notes.isEmpty()}">
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item" th:each="note : ${ticket.notes}" th:text="${note}"></li>
+                            </ul>
+                        </div>
+                        <div th:if="${ticket.notes == null or ticket.notes.isEmpty()}">
+                            <p class="text-muted">No notes added yet.</p>
+                        </div>
+
+                        <!-- Form to add a new note -->
+                        <form th:action="@{'/ticket/' + ${ticket.id} + '/note'}" th:method="post">
+                            <div class="form-group">
+                                <label for="note">Add Note:</label>
+                                <textarea class="form-control" id="note" name="note" rows="2" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-2">Add Note</button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

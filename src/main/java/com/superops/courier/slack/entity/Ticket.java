@@ -25,9 +25,12 @@ public class Ticket {
     private String description;
     private Status status;
     private Priority priority;
-    private String category;
+    private Category category;
+    private String subCategory;
     private String technician;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Provider provider;
+    @ElementCollection
+    private List<String> notes = new ArrayList<>();
 }

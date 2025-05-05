@@ -1,5 +1,6 @@
 package com.superops.courier.slack.model;
 
+import com.superops.courier.slack.entity.Category;
 import com.superops.courier.slack.entity.Priority;
 import com.superops.courier.slack.entity.Provider;
 import com.superops.courier.slack.entity.Status;
@@ -20,7 +21,8 @@ public class TicketRequest {
     private String description;
     private Status status;
     private Priority priority;
-    private String category;
+    private Category category;
+    private String subCategory;
     private String technician;
     private Provider provider;
 }
