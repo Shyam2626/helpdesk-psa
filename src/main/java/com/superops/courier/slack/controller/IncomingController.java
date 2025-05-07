@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -107,8 +108,8 @@ public class IncomingController {
         fields.add(Map.of(
                 "name", "category",
                 "type", "category-dropdown",
-                "options", List.of("engineering" , "sales" , "technician" , "hr"),
-                "value", ticket.getCategory() != null ? ticket.getCategory() : "hardware"
+                "options", List.of("engineering", "sales", "technician", "hr"),
+                "value", ticket.getCategory() != null ? ticket.getCategory() : "engineering"
         ));
 
         fields.add(Map.of(
@@ -117,11 +118,6 @@ public class IncomingController {
                 "value", ticket.getSubCategory() != null ? ticket.getSubCategory() : ""
         ));
 
-        return ResponseEntity.ok(fields);
-    }
-
-    @GetMapping("/ticket/subcategories")
-    public ResponseEntity<List<Map<String, String>>> getSubcategories(@RequestParam String category) {
         Map<String, List<String>> categoryMap = Map.of(
                 "engineering", List.of("frontend", "backend", "devops", "qa"),
                 "sales", List.of("domestic", "international", "enterprise", "smb"),
@@ -129,14 +125,13 @@ public class IncomingController {
                 "hr", List.of("recruitment", "payroll", "employee relations", "training")
         );
 
-        List<String> subcategories = categoryMap.getOrDefault(category.toLowerCase(), List.of());
+        fields.add(Map.of(
+                "name", "subcategories",
+                "type", "map",
+                "value", categoryMap
+        ));
 
-        List<Map<String, String>> response = subcategories.stream()
-                .map(sub -> Map.of("title", sub, "value", sub.toLowerCase()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(fields);
     }
-
 }
 

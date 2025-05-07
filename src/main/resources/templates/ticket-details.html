@@ -105,6 +105,10 @@
                 <button type="submit" class="btn btn-primary mt-2">Send Reply</button>
             </form>
 
+            <a th:href="@{'/conversation/initiate'(ticketId=${ticket.id}, email=${ticket.email}, technician=${ticket.technician})}"
+               class="btn btn-warning mt-2">
+                Initiate Conversation
+            </a>
             <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
         </div>
     </div>

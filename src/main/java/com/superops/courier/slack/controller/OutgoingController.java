@@ -70,6 +70,30 @@ public class OutgoingController {
         return "redirect:/ticket/" + ticketId;
     }
 
+    @GetMapping("/conversation/initiate")
+    public String initiateConversation(@RequestParam("ticketId") String ticketId,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("technician") String technician,
+                                       Model model) {
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("ticketId", ticketId);
+        requestBody.put("requesterEmail", email);
+        requestBody.put("technicianEmail", technician);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            restTemplate.postForEntity("http://localhost:3978/initiate-conversation", requestEntity, String.class);
+        } catch (Exception e) {
+            // You can log or handle the error as needed
+            System.err.println("Failed to send reply: " + e.getMessage());
+        }
+        return "redirect:/ticket/" + ticketId;
+    }
+
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
         List<Ticket> tickets = ticketRepository.findAll();
